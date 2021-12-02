@@ -54,9 +54,28 @@ style_image = load_image(style_path)
 plt.figure(figsize=(12, 12))
 plt.subplot(1, 2, 1)
 plt.imshow(image[0])
-plt.title('Content Image')
+plt.title('Image')
 plt.subplot(1, 2, 2)
 plt.imshow(style_image[0])
 plt.title('Style Image')
 
+# Load Magenta's Arbitrary Image Stylization network from TensorFlow Hub  
+hub_module = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/1')
+
+# Pass content and style images as arguments in TensorFlow Constant object format
+stylized_final_image = hub_module(tf.constant(image), tf.constant(style_image))[0]
+
+# Set the size of the plot figure
+plt.figure(figsize=(12, 12))
+
+# Plot the stylized image
+plt.imshow(stylized_final_image[0])
+
+# Add title to the plot
+plt.title('Stylized Final Image')
+
+# Hide axes
+plt.axis('off')
+
+# Show the plot
 plt.show()
