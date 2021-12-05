@@ -4,6 +4,7 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 import cv2
 import tensorflow_hub as hub
+from PIL import Image
 
 #------------------------------------Functions used in the preprocessing------------------------------------
 
@@ -21,35 +22,17 @@ def image_scaler(image, max_dim = 512):
   # Resizes the image based on the scaling constant generated above
   return tf.image.resize(image, new_shape)
 
-def load_image(path_to_img):
+def load_image(img_path):
 
-  # Reads and outputs the entire contents of the input filename.
-  img = tf.io.read_file(path_to_img)
-
-  # Detect whether an image is a BMP, GIF, JPEG, or PNG, and 
-  # performs the appropriate operation to convert the input 
-  # bytes string into a Tensor of type dtype
+  img = tf.io.read_file(img_path)
   img = tf.image.decode_image(img, channels=3)
-
-  # Convert image to dtype, scaling (MinMax Normalization) its values if needed.
   img = tf.image.convert_image_dtype(img, tf.float32)
+  img = img[tf.newaxis, :]
+  return img
+#----------------------- Converting image to numpy array------------------------
 
-  # Scale the image using the custom function we created
-  img = image_scaler(img)
-
-  # Adds a fourth dimension to the Tensor because
-  # the model requires a 4-dimensional Tensor
-  return img[tf.newaxis, :]
-
-#---------------------------------------
-
-image_path = tf.keras.utils.get_file('photo-1501820488136-72669149e0d4', 
-                                       'https://images.unsplash.com/photo-1501820488136-72669149e0d4')
-style_path = tf.keras.utils.get_file('Vincent_van_gogh%2C_la_camera_da_letto%2C_1889%2C_02.jpg',
-                                     'https://upload.wikimedia.org/wikipedia/commons/8/8c/Vincent_van_gogh%2C_la_camera_da_letto%2C_1889%2C_02.jpg')
-
-image = load_image(image_path)
-style_image = load_image(style_path)
+image = load_image('luci.jpeg') # arbitrary image that I chose
+style_image = load_image('girassois.jpg') #arbitrary style that I chosen
 
 plt.figure(figsize=(12, 12))
 plt.subplot(1, 2, 1)
